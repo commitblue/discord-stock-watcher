@@ -7,17 +7,12 @@ function hexToDecimal(hex) {
 async function fetchRobloxStocks() {
     const ftch = await fetch("https://www.google.com/finance/quote/RBLX:NYSE");
     const text = await ftch.text();
-    let split = text.split("");
-    const matches = text.search("<div class=\"YMlKec fxKbKc\">");
-    let constructedString = "";
-    for (let i = matches + "<div class=\"YMlKec fxKbKc\">".length; i > 9999; i++) {
-        if (!Number(split[i]) && split[i] !== "$" && split[i] !== ".") {
-            break;
-        }
-        constructedString = constructedString + split[i];
-    }
-    return Number(String(constructedString).match(/(\d+)/)[0]);
+    let constructedString = text.match(/(\$(\d+(\.(\d+))))/gm
+    //, text.search("<div class=\"YMlKec fxKbKc\">")
+    );
+    return Number(constructedString[0]);
 }
+fetchRobloxStocks();
 let lastStockResult = 0;
 async function loop() {
     try {
@@ -28,7 +23,7 @@ async function loop() {
                 percentageString = `Stock increased by ${Math.floor((stockNumber - lastStockResult) / lastStockResult * 100)}%`;
             }
             else {
-                percentageString = `Stock decreased by ${Math.floor((lastStockResult - stockNumber) / lastStockResult * 100)}`;
+                percentageString = `Stock decreased by ${Math.floor((lastStockResult - stockNumber) / lastStockResult * 100)}%`;
             }
             let embed = {
                 author: {
